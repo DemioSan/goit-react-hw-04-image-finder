@@ -46,7 +46,7 @@ export const App = () => {
     const q = querry;
 
     try {
-      const imags = await fetchImages({ q });
+      const imags = await fetchImages({ q, page: 1 });
       setItems(imags.hits);
       setShowBtn(imags.hits.length >= 15);
     } catch (err) {
@@ -54,7 +54,7 @@ export const App = () => {
     } finally {
       setShowLoad(false);
     }
-  }, [querry, page]);
+  }, [querry]);
 
   const loadMoreService = useCallback(async () => {
     setShowLoad(true);
@@ -63,7 +63,7 @@ export const App = () => {
     try {
       const imags = await fetchImages({
         q: querry,
-        page: page,
+        page,
       });
       setItems(prev => [...prev, ...imags.hits]);
       setShowBtn(imags.hits.length >= 15);
@@ -72,11 +72,14 @@ export const App = () => {
     } finally {
       setShowLoad(false);
     }
-  }, [page]);
+  }, [querry, page]);
 
   useEffect(() => {
-    if (querry && page === 1) searchService();
-    if (page !== 1) loadMoreService();
+    if (querry && page === 1) {
+      searchService();
+    } else if (page !== 1) {
+      loadMoreService();
+    }
   }, [querry, page, searchService, loadMoreService]);
 
   return (
